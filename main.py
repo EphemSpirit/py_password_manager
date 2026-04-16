@@ -18,11 +18,11 @@ def save_information():
 
     # Form validation
     if any(entry in ("", None) for entry in [website, email, password]):
-        messagebox.showerror("Empty Fields", "Please fill out all fields")
+        messagebox.showerror(title="Empty Fields", message="Please fill out all fields")
         return
 
     # confirmation
-    answer = messagebox.askquestion("Entry", "Are you sure you want to save this data?", icon="question")
+    answer = messagebox.askquestion(title="Entry", message="Are you sure you want to save this data?", icon="question")
     if answer == "yes":
         with open("password.txt", "a") as file:
             file.write(f"{website} | {email} | {password}\n")
