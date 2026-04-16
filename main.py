@@ -5,7 +5,7 @@ import secrets
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_random_password():
-    alphabet = string.ascii_letters + string.digits
+    alphabet = string.ascii_letters + string.digits + string.punctuation
     password = "".join(secrets.choice(alphabet) for i in range(12))
     password_input.insert(0, password)
     window.clipboard_append(password)
