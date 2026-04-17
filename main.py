@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import string
 import secrets
+import json
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_random_password():
@@ -10,23 +11,52 @@ def generate_random_password():
     password_input.insert(0, password)
     window.clipboard_append(password)
 
+# ---------------------------- SEARCHING ------------------------------- #
+
+def search():
+    try:
+        with open("password.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print("No data available to search through.")
+    else:
+        try:
+            val = data[website_input.get()]
+        except KeyError:
+            messagebox.showinfo(title="No Result", message="No entries for that website name.")
+        else:
+            messagebox.showinfo(title=website_input.get(),
+                                message=f"Email/Username: {val["email"]}.\nPassword: {val["password"]}")
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save_information():
     website = website_input.get()
     email = email_input.get()
     password = password_input.get()
 
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
+
     # Form validation
     if any(entry in ("", None) for entry in [website, email, password]):
         messagebox.showerror(title="Empty Fields", message="Please fill out all fields")
         return
 
-    # confirmation
-    answer = messagebox.askquestion(title="Entry", message="Are you sure you want to save this data?", icon="question")
-    if answer == "yes":
-        with open("password.txt", "a") as file:
-            file.write(f"{website} | {email} | {password}\n")
+    try:
+        with open("password.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        with open("password.json", "w") as file:
+            json.dump(new_data, file, indent=4)
+    else:
+        data.update(new_data)
 
+        with open("password.json", "w") as file:
+            json.dump(data, file, indent=4)
+    finally:
         website_input.delete(0, END)
         password_input.delete(0, END)
 
@@ -47,9 +77,13 @@ canvas.grid(row=0, column=1)
 website_label = Label(text="Website:")
 website_label.grid(row=1, column=0)
 
-website_input = Entry(width=35)
-website_input.grid(row=1, column=1, columnspan=2)
+website_input = Entry(width=21)
+website_input.grid(row=1, column=1)
 website_input.focus()
+
+# SEARCH BUTTON
+search_btn = Button(text="Search", width=11, command=search)
+search_btn.grid(row=1, column=2)
 
 #EMAIL/USERNAME
 email_label = Label(text="Email/Username:")
