@@ -18,7 +18,7 @@ def search():
         with open("password.json", "r") as file:
             data = json.load(file)
     except FileNotFoundError:
-        print("No data available to search through.")
+        messagebox.showerror(title="No data", message="No data available to search through.")
     else:
         try:
             val = data[website_input.get()]
